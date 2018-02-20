@@ -1,0 +1,15 @@
+﻿/*Layout styles*/
+
+.body-content {
+    margin: 20px 0px;
+}
+
+#nav-input {
+    width: 100px;
+    -webkit-transition: width 0.4s ease-in-out;
+    transition: width 0.4s ease-in-out;
+}
+
+#nav-input:focus {
+    width: 300px;
+}
