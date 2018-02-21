@@ -6,8 +6,10 @@
     <title>@ViewBag.Title - Multitude</title>
     @Styles.Render("~/Content/css")
     @Scripts.Render("~/bundles/modernizr")
+    @Scripts.Render("~/bundles/jquery")
 </head>
 <body>
+    <!-- Navbar -->
     <nav class="navbar navbar-expand-md navbar-light bg-light">
 
         <a class="navbar-brand" href="/">Multitude</a>
@@ -29,19 +31,27 @@
                 <a class="@(ViewContext.RouteData.Values["Controller"].ToString().ToLower() == "causes" ? "active " : "")nav-item nav-link" href="/Causes/Create">Create a Cause</a>
                 <a class="@(ViewContext.RouteData.Values["Controller"].ToString().ToLower() == "causes" ? "active " : "")nav-item nav-link" href="/Causes">Explore Causes</a>
                 <a class="@(ViewContext.RouteData.Values["Controller"].ToString().ToLower() == "members" ? "active " : "")nav-item nav-link" href="/Members">Find Members</a>
-                <a class="nav-item nav-link">Sign Up/Log In</a>
+                @if (Session["UserID"] == null)
+                {
+                    <a class="nav-item nav-link" href="#" data-toggle="modal" data-target="#loginModal">Sign Up/Log In</a>
+                    @Html.Partial("_Login")
+                }
+                else
+                {
+                    <a class="nav-item nav-link" href="/Members/Details/@Session["UserID"]">@Session["UserName"]'s Page</a>
+                }
             </div>
         </div>
 
     </nav>
 
+    <!-- Body container -->
     <div class="container-fluid body-content">
 
-            @RenderBody()
+    @RenderBody()
 
     </div>
 
-    @Scripts.Render("~/bundles/jquery")
     @Scripts.Render("~/bundles/bootstrap")
     @RenderSection("scripts", required: false)
 </body>

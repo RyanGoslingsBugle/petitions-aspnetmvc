@@ -5,6 +5,7 @@ using System.Data.Entity;
 using System.Linq;
 using System.Net;
 using System.Web;
+using System.Web.Helpers;
 using System.Web.Mvc;
 using Coursework.Models;
 
@@ -50,6 +51,8 @@ namespace Coursework.Controllers
         {
             if (ModelState.IsValid)
             {
+                string passwordHash = Crypto.HashPassword(member.Password);
+                member.Password = passwordHash;
                 db.Members.Add(member);
                 db.SaveChanges();
                 return RedirectToAction("Index");

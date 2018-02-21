@@ -11,6 +11,7 @@ namespace Coursework.Models
         public string Description { get; set; }
         public string Pledge { get; set; }
         public string Target { get; set; }
+        public string ImageURL { get; set; }
         public DateTime CreatedAt { get; set; }
 
         public int MemberID { get; set; }
