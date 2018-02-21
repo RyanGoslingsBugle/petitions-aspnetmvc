@@ -28,13 +28,13 @@
                 </div>
             </form>
             <div class="navbar-nav">
-                <a class="@(ViewContext.RouteData.Values["Controller"].ToString().ToLower() == "causes" ? "active " : "")nav-item nav-link" href="/Causes/Create">Create a Cause</a>
-                <a class="@(ViewContext.RouteData.Values["Controller"].ToString().ToLower() == "causes" ? "active " : "")nav-item nav-link" href="/Causes">Explore Causes</a>
-                <a class="@(ViewContext.RouteData.Values["Controller"].ToString().ToLower() == "members" ? "active " : "")nav-item nav-link" href="/Members">Find Members</a>
+                <a class="@(ViewContext.RouteData.Values["Controller"].ToString().ToLower() == "causes" && ViewContext.RouteData.Values["Action"].ToString().ToLower() == "create"  ? "active " : "")nav-item nav-link" href="/Causes/Create">Create a Cause</a>
+                <a class="@(ViewContext.RouteData.Values["Controller"].ToString().ToLower() == "causes" && ViewContext.RouteData.Values["Action"].ToString().ToLower() == "index"  ? "active " : "")nav-item nav-link" href="/Causes">Explore Causes</a>
+                <a class="@(ViewContext.RouteData.Values["Controller"].ToString().ToLower() == "members" && ViewContext.RouteData.Values["Action"].ToString().ToLower() == "index"  ? "active " : "")nav-item nav-link" href="/Members">Find Members</a>
                 @if (Session["UserID"] == null)
                 {
                     <a class="nav-item nav-link" href="#" data-toggle="modal" data-target="#loginModal">Sign Up/Log In</a>
-                    @Html.Partial("_Login")
+                    @Html.Partial("_Login", new Coursework.Models.Login())
                 }
                 else
                 {
