@@ -75,6 +75,10 @@ namespace Coursework.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
+            if (Convert.ToInt32(Session["UserID"].ToString()) != id && (string)Session["Role"] != "Admin")
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.Forbidden);
+            }
             Member member = db.Members.Find(id);
             if (member == null)
             {
@@ -88,10 +92,15 @@ namespace Coursework.Controllers
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "ID,City,Country,Avatar,Name,Email,Password")] Member member)
+        public ActionResult Edit([Bind(Include = "ID,Name,Email,Password,City,Country,Avatar")] Member member)
         {
+            if (Convert.ToInt32(Session["UserID"].ToString()) != member.ID && (string)Session["Role"] != "Admin")
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.Forbidden);
+            }
             if (ModelState.IsValid)
             {
+                member.Password = Crypto.HashPassword(member.Password);
                 db.Entry(member).State = EntityState.Modified;
                 db.SaveChanges();
                 return RedirectToAction("Index");

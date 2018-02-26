@@ -9,15 +9,17 @@ namespace Coursework.Models
     {
         [Required]
         public int ID { get; set; }
+        [Required]
         public string Title { get; set; }
+        [Required]
         public string Description { get; set; }
+        [Required]
         public string Pledge { get; set; }
+        [Required]
         public string Target { get; set; }
         public string ImageURL { get; set; }
-        public DateTime CreatedAt { get; set; }
-
         [Required]
-        [Display(Name = "Creator")]
+        public DateTime CreatedAt { get; set; }
         public Member Member { get; set; }
     }
 

@@ -28,9 +28,12 @@
                 </div>
             </form>
             <ul class="navbar-nav">
-                <li class="nav-item">
-                    <a class="@(ViewContext.RouteData.Values["Controller"].ToString().ToLower() == "causes" && ViewContext.RouteData.Values["Action"].ToString().ToLower() == "create"  ? "active " : "")nav-link" href="/Causes/Create">Create a Cause</a>
-                </li>
+                @if (Session["UserID"] != null)
+                {
+                    <li class="nav-item">
+                        <a class="@(ViewContext.RouteData.Values["Controller"].ToString().ToLower() == "causes" && ViewContext.RouteData.Values["Action"].ToString().ToLower() == "create" ? "active " : "")nav-link" href="/Causes/Create">Create a Cause</a>
+                    </li>
+                }
                 <li class="nav-item">
                     <a class="@(ViewContext.RouteData.Values["Controller"].ToString().ToLower() == "causes" && ViewContext.RouteData.Values["Action"].ToString().ToLower() == "index"  ? "active " : "")nav-link" href="/Causes">Explore Causes</a>
                 </li>
@@ -38,21 +41,21 @@
                     <a class="@(ViewContext.RouteData.Values["Controller"].ToString().ToLower() == "members" && ViewContext.RouteData.Values["Action"].ToString().ToLower() == "index"  ? "active " : "")nav-link" href="/Members">Find Members</a>
                 </li>
                 @if (Session["UserID"] == null)
-                {
-                <li class="nav-item">
-                    <a class="nav-link" href="#" data-toggle="modal" data-target="#loginModal">Sign Up/Log In</a>
-                </li>
-                @Html.Partial("_Login", new Coursework.Models.Login())
-                }
-                else
-                {
-                <li class="nav-item">
-                    <a class="nav-link" href="/Members/Details/@Session["UserID"]">@Session["UserName"]'s Page</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="/Home/Logout">Log Out</a>
-                </li>
-                }
+    {
+            <li class="nav-item">
+                <a class="nav-link" href="#" data-toggle="modal" data-target="#loginModal">Sign Up/Log In</a>
+            </li>
+            @Html.Partial("_Login", new Coursework.Models.Login())
+}
+else
+{
+            <li class="nav-item">
+                <a class="nav-link" href="/Members/Details/@Session["UserID"]">@Session["UserName"]'s Page</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="/Home/Logout">Log Out</a>
+            </li>
+}
             </ul>
         </div>
 

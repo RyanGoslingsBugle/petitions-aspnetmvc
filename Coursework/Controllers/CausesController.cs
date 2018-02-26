@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Entity;
+using System.Globalization;
 using System.Linq;
 using System.Net;
 using System.Web;
@@ -38,8 +39,12 @@ namespace Coursework.Controllers
         // GET: Causes/Create
         public ActionResult Create()
         {
-            ViewBag.MemberID = new SelectList(db.Members, "ID", "ID");
-            return View();
+            if (Session["UserID"] != null)
+            {
+                return View();
+            }
+
+            return RedirectToAction("Index");
         }
 
         // POST: Causes/Create
@@ -47,16 +52,27 @@ namespace Coursework.Controllers
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "ID,Title,Description,Pledge,Target,ImageURL,CreatedAt,MemberID")] Cause cause)
+        public ActionResult Create([Bind(Include = "Title,Description,Pledge,Target,ImageURL,Member")] Cause cause)
         {
+            if (Session["UserID"] == null)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.Forbidden);
+            }
+            int memberID = Convert.ToInt32(Session["UserID"].ToString());
+            Member member = db.Members.Find(memberID);
+            cause.Member = member;
+            cause.CreatedAt = DateTime.Now;
             if (ModelState.IsValid)
             {
                 db.Causes.Add(cause);
                 db.SaveChanges();
                 return RedirectToAction("Index");
             }
+            foreach (var error in ViewData.ModelState.Values.SelectMany(modelState => modelState.Errors))
+            {
+                System.Diagnostics.Debug.WriteLine(error.ErrorMessage);
+            }
 
-            ViewBag.MemberID = new SelectList(db.Members, "ID", "ID", cause.Member.ID);
             return View(cause);
         }
 
@@ -72,7 +88,6 @@ namespace Coursework.Controllers
             {
                 return HttpNotFound();
             }
-            ViewBag.MemberID = new SelectList(db.Members, "ID", "ID", cause.Member.ID);
             return View(cause);
         }
 
@@ -89,7 +104,6 @@ namespace Coursework.Controllers
                 db.SaveChanges();
                 return RedirectToAction("Index");
             }
-            ViewBag.MemberID = new SelectList(db.Members, "ID", "ID", cause.Member.ID);
             return View(cause);
         }
 
