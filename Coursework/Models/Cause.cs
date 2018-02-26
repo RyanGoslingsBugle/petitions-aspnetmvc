@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Data.Entity;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.ComponentModel.DataAnnotations;
 
 namespace Coursework.Models
 {
     public class Cause
     {
+        [Required]
         public int ID { get; set; }
         public string Title { get; set; }
         public string Description { get; set; }
@@ -14,8 +16,8 @@ namespace Coursework.Models
         public string ImageURL { get; set; }
         public DateTime CreatedAt { get; set; }
 
-        public int MemberID { get; set; }
-        [ForeignKey("MemberID")]
+        [Required]
+        [Display(Name = "Creator")]
         public Member Member { get; set; }
     }
 

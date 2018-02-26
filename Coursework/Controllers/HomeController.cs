@@ -12,9 +12,13 @@ namespace Coursework.Controllers
 {
     public class HomeController : Controller
     {
+        // import database connection
+        private CauseDBContext db = new CauseDBContext();
+
         public ActionResult Index()
         {
-            return View();
+            // pass causes object to view
+            return View(db.Causes.ToList());
         }
 
         public ActionResult About()
@@ -31,12 +35,12 @@ namespace Coursework.Controllers
             return View();
         }
 
+        // Password hashing from Stack Overflow, Kevin Nelson, 16/08/17, https://stackoverflow.com/questions/45723140/how-to-salt-and-compare-password-in-asp-net-mvc
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Login(Login loginUser)
         {
-            System.Diagnostics.Debug.WriteLine(loginUser.Email);
-            System.Diagnostics.Debug.WriteLine(loginUser.Password);
             if (!ModelState.IsValid)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
@@ -49,6 +53,7 @@ namespace Coursework.Controllers
                 {
                     Session["UserID"] = matchedUsers.ID.ToString();
                     Session["UserName"] = matchedUsers.Name.ToString();
+                    Session["Role"] = matchedUsers.Role.ToString();
                     return new HttpStatusCodeResult(HttpStatusCode.OK);
                 }
                 else
@@ -58,5 +63,16 @@ namespace Coursework.Controllers
             }
         }
 
+        // GET: Destroy active session if any
+
+        [HttpGet]
+        public ActionResult Logout()
+        {
+            Session.Clear();
+            Session.Abandon();
+            Response.Cookies["ASP.NET_SessionId"].Value = string.Empty;
+            Response.Cookies["ASP.NET_SessionId"].Expires = DateTime.Now.AddMonths(-10);
+            return View("Index");
+        }
     }
 }

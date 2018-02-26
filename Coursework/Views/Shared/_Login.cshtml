@@ -5,53 +5,102 @@
     <div class="modal-dialog modal-dialog-centered" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="loginModalLabel">Log In</h5>
+                <h5 class="modal-title" id="loginModalLabel">Log In/Sign Up</h5>
             </div>
-            @using (Html.BeginForm("Login", "Home", FormMethod.Post, new { id = "loginForm" }))
-            {
-                @Html.AntiForgeryToken()
-                <div class="modal-body">
-                    <div class="form-group">
-                        @Html.TextBoxFor(model => model.Email, new { @class = "form-control", placeholder = "Email", type = "email", required = "required" })
-                    </div>
-                    <div class="form-group">
-                        @Html.TextBoxFor(model => model.Password, new { @class = "form-control", placeholder = "Password", type = "password", required = "required" })
-                    </div>
+
+            <div class="modal-body">
+
+                <ul class="nav nav-tabs mb-sm-2">
+                    <li id="login-tab" class="nav-item"><a class="nav-link active" href="#">Log In</a></li>
+                    <li id="signup-tab" class="nav-item"><a class="nav-link" href="#">Sign Up</a></li>
+                </ul>
+
+                <div id="login-content">
+                    @using (Html.BeginForm("Login", "Home", FormMethod.Post, new { id = "loginForm" }))
+        {
+            @Html.AntiForgeryToken()
+            <div class="form-group">
+                @Html.TextBoxFor(model => model.Email, new { @class = "form-control", placeholder = "Email", type = "email", required = "required" })
+            </div>
+            <div class="form-group">
+                @Html.TextBoxFor(model => model.Password, new { @class = "form-control", placeholder = "Password", type = "password", required = "required" })
+            </div>
+}
+                </div>
+
+                <div id="signup-content" class="d-none">
+                    @using (Html.BeginForm("Create", "Members", FormMethod.Post, new { id = "signupForm" }))
+        {
+            @Html.AntiForgeryToken()
+            <div class="form-group">
+                <input class="form-control" name="Name" placeholder="User Name" type="text" required />
+            </div>
+            <div class="form-group">
+                <input class="form-control" name="Email" placeholder="Email Address" type="email" required />
+            </div>
+            <div class="form-group">
+                <input class="form-control" name="Password" placeholder="Password" type="password" required />
+            </div>
+}
                 </div>
                 <div id="errorDiv" class="alert alert-danger d-none"></div>
                 <div id="successDiv" class="alert alert-success d-none"></div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                    <input id="submitBtn" type="submit" class="btn btn-primary" value="Log In">
-                </div>
+            </div>
+            <div class="modal-footer">
+                <button id="closeButton" type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <input id="loginSubmit" type="submit" class="btn btn-primary" value="Log In" form="loginForm">
+                <input id="signupSubmit" type="submit" class="btn btn-primary d-none" value="Sign Up" form="signupForm">
+            </div>
             }
         </div>
     </div>
 </div>
 
+@*Ajax form posting referenced from Jasen, Stack Overflow, 26-06-15, https://stackoverflow.com/questions/31053460/how-to-make-a-net-mvc-form-inside-a-modal-using-jquery-with-validation*@
+
 <script type="text/javascript">
-    var url = '@Url.Action("Login", "Home")';
+
     $(document).ready(function () {
+        // activate jQuery validation methods on form
         $('#loginForm').validate({
+            // set ajax post as default submit method
             submitHandler: function (form, event) {
+                // prevent default submit
                 event.preventDefault();
+               // do ajax call 
                 $.ajax({
                     url: form.action,
                     type: form.method,
-                    data: $(form).serialize(),
+                    data: $('#loginForm').serialize(),
+                    // handle success with notification callbacks
                     success: function (result) {
-                        var target = $('#successDiv');
-                        if (target.hasClass('d-none')) {
-                            target.removeClass('d-none');
+                        // add/remove div hiding
+                        var suctarget = $('#successDiv');
+                        var ertarget = $('#errorDiv');
+                        if (suctarget.hasClass('d-none')) {
+                            suctarget.removeClass('d-none');
                         }
-                        target.html('<p>Login was successful, welcome back.</p>');
-                        $('#submitBtn').prop('disabled', true).addClass('disabled');
+                        if (!ertarget.hasClass('d-none')) {
+                            ertarget.addClass('d-none');
+                        }
+                        suctarget.html('<p>Login was successful, welcome back.</p>');
+
+                        // disable submit button
+                        $('#loginSubmit').prop('disabled', true).addClass('disabled');
+
+                        // auto-close after timer
+                        setTimeout(function () {
+                            $('#closeButton').click();
+                        }, 5000);
                     },
+                    // handle error with notification callbacks
                     error: function (errorResult) {
+                        // add/remove div hiding
                         var target = $('#errorDiv');
                         if (target.hasClass('d-none')) {
                             target.removeClass('d-none');
                         }
+
                         if (errorResult.status == 403) {
                             target.html('<p>The username/password was incorrect. Please try again.</p>');
                             console.log(errorResult);
@@ -64,10 +113,86 @@
                 return false;
             }
         });
+
+        // activate jQuery validation methods on form
+        $('#signupForm').validate({
+            // set ajax post as default submit method
+            submitHandler: function (form, event) {
+                // prevent default submit
+                event.preventDefault();
+                // do ajax call 
+                $.ajax({
+                    url: form.action,
+                    type: form.method,
+                    data: $('#signupForm').serialize(),
+                    // handle success with notification callbacks
+                    success: function (result) {
+                        // add/remove div hiding
+                        var suctarget = $('#successDiv');
+                        var ertarget = $('#errorDiv');
+                        if (suctarget.hasClass('d-none')) {
+                            suctarget.removeClass('d-none');
+                        }
+                        if (!ertarget.hasClass('d-none')) {
+                            ertarget.addClass('d-none');
+                        }
+                        suctarget.html('<p>Signup was successful, thank you.</p>');
+
+                        // disable submit button
+                        $('#signupSubmit').prop('disabled', true).addClass('disabled');
+
+                        // auto-close after timer
+                        setTimeout(function () {
+                            $('#closeButton').click();
+                        }, 5000);
+                    },
+                    // handle error with notification callbacks
+                    error: function (errorResult) {
+                        // add/remove div hiding
+                        var target = $('#errorDiv');
+                        if (target.hasClass('d-none')) {
+                            target.removeClass('d-none');
+                        }
+
+                        target.html('<p>An error occured in the signup route.</p>');
+                        console.log(errorResult);
+                    }
+                });
+                return false;
+            }
+        });
+
+        // force reload when closing modal
         $('#loginModal').on('hidden.bs.modal', function () {
             location.reload();
         });
+
+        // flip visibility classes when switching tabs
+        $('#login-tab').on('click', function () {
+            var login = $('#login-content');
+            if (login.hasClass('d-none')) {
+                login.removeClass('d-none');
+                $('#signup-content').addClass('d-none');
+                $('#signupSubmit').addClass('d-none');
+                $('#loginSubmit').removeClass('d-none');
+                $('#signup-tab a').removeClass('active');
+                $('#login-tab a').addClass('active');
+            }
+        });
+
+        $('#signup-tab').on('click', function () {
+            var signup = $('#signup-content');
+            if (signup.hasClass('d-none')) {
+                signup.removeClass('d-none');
+                $('#login-content').addClass('d-none');
+                $('#signupSubmit').removeClass('d-none');
+                $('#loginSubmit').addClass('d-none');
+                $('#signup-tab a').addClass('active');
+                $('#login-tab a').removeClass('active');
+            }
+        });
     });
+
 </script>
 
 <script src='@Url.Content("~/Scripts/jquery.validate.js")' type='text/javascript'></script>
