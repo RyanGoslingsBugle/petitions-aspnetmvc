@@ -75,6 +75,10 @@ namespace Coursework.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
+            if (Session["UserID"] == null)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.Forbidden);
+            }
             if (Convert.ToInt32(Session["UserID"].ToString()) != id && (string)Session["Role"] != "Admin")
             {
                 return new HttpStatusCodeResult(HttpStatusCode.Forbidden);
@@ -94,14 +98,24 @@ namespace Coursework.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Edit([Bind(Include = "ID,Name,Email,Password,City,Country,Avatar")] Member member)
         {
+            if (Session["UserID"] == null)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.Forbidden);
+            }
             if (Convert.ToInt32(Session["UserID"].ToString()) != member.ID && (string)Session["Role"] != "Admin")
             {
                 return new HttpStatusCodeResult(HttpStatusCode.Forbidden);
             }
             if (ModelState.IsValid)
             {
-                member.Password = Crypto.HashPassword(member.Password);
-                db.Entry(member).State = EntityState.Modified;
+                Member currentMember = db.Members.Find(member.ID);
+                currentMember.Password = Crypto.HashPassword(member.Password);
+                currentMember.Name = member.Name;
+                currentMember.Email = member.Email;
+                currentMember.City = member.City;
+                currentMember.Country = member.Country;
+                currentMember.Avatar = member.Avatar;
+
                 db.SaveChanges();
                 return RedirectToAction("Index");
             }

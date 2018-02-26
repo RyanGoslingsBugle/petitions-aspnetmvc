@@ -83,10 +83,18 @@ namespace Coursework.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
+            if (Session["UserID"] == null)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.Forbidden);
+            }
             Cause cause = db.Causes.Find(id);
             if (cause == null)
             {
                 return HttpNotFound();
+            }
+            if (Convert.ToInt32(Session["UserID"].ToString()) != cause.Member.ID && (string)Session["Role"] != "Admin")
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.Forbidden);
             }
             return View(cause);
         }
@@ -98,52 +106,101 @@ namespace Coursework.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Edit([Bind(Include = "Title,Description,Pledge,Target,ImageURL")] Cause cause)
         {
+            if (Session["UserID"] == null)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.Forbidden);
+            }
+            if (Convert.ToInt32(Session["UserID"].ToString()) != cause.Member.ID && (string)Session["Role"] != "Admin")
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.Forbidden);
+            }
+
             if (ModelState.IsValid)
             {
-                db.Entry(cause).State = EntityState.Modified;
+                Cause currentCause = db.Causes.Find(cause.ID);
+                currentCause.Title = cause.Title;
+                currentCause.Description = cause.Description;
+                currentCause.Pledge = cause.Pledge;
+                currentCause.Target = cause.Target;
+                currentCause.ImageURL = cause.ImageURL;
+
                 db.SaveChanges();
                 return RedirectToAction("Index");
             }
             return View(cause);
         }
 
-        //// GET: Causes/Delete/5
-        //public ActionResult Delete(int? id)
-        //{
-        //    // Casting session vars to string from MSDN, 21/09/16, https://code.msdn.microsoft.com/How-to-create-and-access-447ada98
-        //    if (Session["Role"] as string != "Admin")
-        //    {
-        //        return new HttpStatusCodeResult(HttpStatusCode.Forbidden);
-        //    }
-        //    if (id == null)
-        //    {
-        //        return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-        //    }
-        //    Cause cause = db.Causes.Find(id);
-        //    if (cause == null)
-        //    {
-        //        return HttpNotFound();
-        //    }
-        //    return View(cause);
-        //}
+        // GET: Causes/Delete/5
+        public ActionResult Delete(int? id)
+        {
+            if (Session["UserID"] == null)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.Forbidden);
+            }
+            // Casting session vars to string from MSDN, 21/09/16, https://code.msdn.microsoft.com/How-to-create-and-access-447ada98
+            if (Session["Role"].ToString() != "Admin")
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.Forbidden);
+            }
+            if (id == null)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+            Cause cause = db.Causes.Find(id);
+            if (cause == null)
+            {
+                return HttpNotFound();
+            }
+            return View(cause);
+        }
 
-        //// POST: Causes/Delete/5
-        //[HttpPost, ActionName("Delete")]
-        //[ValidateAntiForgeryToken]
-        //public ActionResult DeleteConfirmed(int id)
-        //{
-        //    if (Session["Role"] as string != "Admin")
-        //    {
-        //        return new HttpStatusCodeResult(HttpStatusCode.Forbidden);
-        //    } 
-        //    else
-        //    {
-        //        Cause cause = db.Causes.Find(id);
-        //        db.Causes.Remove(cause);
-        //        db.SaveChanges();
-        //        return RedirectToAction("Index");
-        //    }
-        //}
+        // POST: Causes/Delete/5
+        [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
+        public ActionResult DeleteConfirmed(int id)
+        {
+            if (Session["UserID"] == null)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.Forbidden);
+            }
+            if (Session["Role"].ToString() != "Admin")
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.Forbidden);
+            }
+            else
+            {
+                Cause cause = db.Causes.Find(id);
+                db.Causes.Remove(cause);
+                db.SaveChanges();
+                return RedirectToAction("Index");
+            }
+        }
+
+        // POST: /Causes/Sign/5
+        // Record signing of cause by member
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult Sign(int? id)
+        {
+            if (id == null)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+            if (Session["UserID"] == null)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.Forbidden);
+            }
+            Cause cause = db.Causes.Find(id);
+            int memberID = Convert.ToInt32(Session["UserID"].ToString());
+            Member member = db.Members.Find(memberID);
+
+            if (!member.Causes.Contains(cause))
+            {
+                member.Causes.Add(cause);
+            }
+
+            return View("Details/" + id);
+        }
 
         protected override void Dispose(bool disposing)
         {
