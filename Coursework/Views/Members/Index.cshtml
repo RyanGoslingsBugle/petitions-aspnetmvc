@@ -4,54 +4,39 @@
     ViewBag.Title = "Index";
 }
 
-<h2>Index</h2>
 
-<p>
-    @Html.ActionLink("Create New", "Create")
-</p>
-<table class="table">
-    <tr>
-        <th>
-            @Html.DisplayNameFor(model => model.City)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.Country)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.Avatar)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.Name)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.Email)
-        </th>
-        <th></th>
-    </tr>
+    <div class="jumbotron jumbotron-fluid my-4">
+        <div class="container-fluid">
+            <div class="row mx-2">
+                <div class="col-md-8">
+                    <h2 class="display-4">Our Members</h2>
+                    <p class="lead">We value every one of our members, and their capacity to make a better world through collective action.</p>
+                    <hr class="my-4" />
+                    <p class="lead">Why not join us today and pledge your support?</p>
+                </div>
+                <div class="col-md-4">
+                    <img class="img-fluid rounded" src="~/Images/fistbump.jpeg" />
+                </div>
+            </div>
+        </div>
+    </div>
 
-@foreach (var item in Model) {
-    <tr>
-        <td>
-            @Html.DisplayFor(modelItem => item.City)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.Country)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.Avatar)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.Name)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.Email)
-        </td>
-        <td>
-            @Html.ActionLink("Edit", "Edit", new { id=item.ID }) |
-            @Html.ActionLink("Details", "Details", new { id=item.ID }) |
-            @Html.ActionLink("Delete", "Delete", new { id=item.ID })
-        </td>
-    </tr>
-}
+<div class="row">
 
-</table>
+    @foreach (var item in Model)
+    {
+    <div class="col-sm-2">
+        <div class="card">
+            <img class="card-img-top" src="@item.ImagePath" />
+            <div class="card-body">
+                <h5 class="card-title">@item.Name</h5>
+                <p class="card-subtitle">@item.Email</p>
+                <p class="card-text">@item.City</p>
+                <p class="card-text">@item.Country</p>
+                <a href="/members/details/@item.ID" class="btn btn-primary">Details</a>
+            </div>
+        </div>
+    </div>
+    }
+
+</div>

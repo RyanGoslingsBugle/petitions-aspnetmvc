@@ -11,7 +11,31 @@
         transition: width 0.4s ease-in-out;
     }
 
-        #nav-input:focus {
-            width: 300px;
-        }
+    #nav-input:focus {
+        width: 300px;
+    }
+}
+
+.profile-page-header {
+    background-image: url("../../Images/member.jpeg");
+    width: 100%;
+    height: 400px;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    position: relative;
+}
+
+.profile-page-text {
+    text-align: center;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: white;
+}
+
+.profile-page-text img {
+    width: 100px;
+    height: 100px;
 }

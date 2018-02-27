@@ -50,7 +50,7 @@
 else
 {
             <li class="nav-item">
-                <a class="nav-link" href="/Members/Details/@Session["UserID"]">@Session["UserName"]'s Page</a>
+                <a class="nav-link" href="/Members/Edit/@Session["UserID"]">@Session["UserName"]'s Page</a>
             </li>
             <li class="nav-item">
                 <a class="nav-link" href="/Home/Logout">Log Out</a>
@@ -62,7 +62,7 @@ else
     </nav>
 
     <!-- Body container -->
-    <div class="container-fluid body-content">
+    <div class="container-fluid">
 
     @RenderBody()
 
