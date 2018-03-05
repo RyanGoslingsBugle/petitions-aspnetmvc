@@ -2,26 +2,56 @@
 
 @{
     ViewBag.Title = "Details";
+    string imagePath = Model.ImagePath == null ? "/images/user.jpeg" : Model.ImagePath;
 }
 
 <div class="row">
     <div class="profile-page-header mb-4">
         <div class="profile-page-text">
-            <img src="@Html.DisplayFor(model => model.ImagePath)" class="img-thumbnail" />
+            <img src="@imagePath" class="img-thumbnail" />
             <h2>@Html.DisplayFor(model => model.Name)</h2>
             <p>@Html.DisplayFor(model => model.City)</p>
             <p>@Html.DisplayFor(model => model.Country)</p>
-            <a class="btn btn-primary" href="/members">Back</a>
+            @if ((string)Session["UserID"] == Model.ID.ToString() || (string)Session["Role"] == "Admin")
+            {
+                <a class="btn btn-warning" href="/members/edit/@Model.ID">Edit</a>
+            }
         </div>
     </div>
 </div>
 
 <div class="container">
     <div class="row">
+        <h4>Created Causes</h4>
+    </div>
+    <div class="row">
+        @if (Model.createdCauses.Count < 1)
+        {
+            <p class="lead">Nothing here yet!</p>
+        }
+        else
+        {
+            foreach (var cause in Model.createdCauses)
+            {
+                <div class="col-md-4">
+                    <div class="card">
+                        <img class="card-img-top" src="@cause.ImageURL" />
+                        <div class="card-body">
+                            <h5 class="card-title">@cause.Title</h5>
+                            <p class="card-subtitle">Started by <a href="/members/details/@cause.Member.ID">@cause.Member.Name</a></p>
+                            <p class="card-text">@cause.Pledge</p>
+                            <a href="/causes/details/@cause.ID" class="btn btn-primary">Details</a>
+                        </div>
+                    </div>
+                </div>
+            }
+        }
+    </div>
+    <div class="row">
         <h4>Backed Causes</h4>
     </div>
     <div class="row">
-        @if (Model.Causes == null)
+        @if (Model.Causes.Count < 1)
         {
             <p class="lead">Nothing here yet!</p>
         }
@@ -29,13 +59,13 @@
         {
             foreach (var cause in Model.Causes)
             {
-                <div class="col-sm-2">
+                <div class="col-md-4">
                     <div class="card">
                         <img class="card-img-top" src="@cause.ImageURL" />
                         <div class="card-body">
                             <h5 class="card-title">@cause.Title</h5>
-                            <p class="card-subtitle">@cause.Member</p>
-                            <p class="card-text">@cause.Description</p>
+                            <p class="card-subtitle">Started by <a href="/members/details/@cause.Member.ID">@cause.Member.Name</a></p>
+                            <p class="card-text">@cause.Pledge</p>
                             <a href="/causes/details/@cause.ID" class="btn btn-primary">Details</a>
                         </div>
                     </div>

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Data.Entity;
 using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Web;
@@ -29,11 +30,19 @@ namespace Coursework.Controllers
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
             Cause cause = db.Causes.Find(id);
+            if (Session["UserID"] != null)
+            {
+                var userID = Convert.ToInt32(Session["UserID"].ToString());
+                if (cause.Signers.Any(signer => signer.ID == userID))
+                {
+                    ViewBag.signed = true;
+                }
+            }
             if (cause == null)
             {
                 return HttpNotFound();
             }
-            return View(cause);
+            return View(new CauseVM(cause));
         }
 
         // GET: Causes/Create
@@ -41,7 +50,7 @@ namespace Coursework.Controllers
         {
             if (Session["UserID"] != null)
             {
-                return View();
+                return View(new CauseVM());
             }
 
             return RedirectToAction("Index");
@@ -52,19 +61,41 @@ namespace Coursework.Controllers
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "Title,Description,Pledge,Target,ImageURL,Member")] Cause cause)
+        public ActionResult Create([Bind(Include = "Title,Description,Pledge,Target,Image")] CauseVM cause)
         {
             if (Session["UserID"] == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.Forbidden);
             }
+            if (cause.Image != null && cause.Image.ContentLength > 0)
+            {
+                var allowedExtensions = new[] { ".jpg", ".jpeg", ".png" };
+                string extension = Path.GetExtension(cause.Image.FileName).ToLower();
+                if (!allowedExtensions.Contains(extension))
+                {
+                    ModelState.AddModelError("Image", "Allowed file formats are jpg, jpeg and png.");
+                }
+            } else
+            {
+                ModelState.AddModelError("Image", "An image is required.");
+            }
+            cause.CreatedAt = DateTime.Now;
             int memberID = Convert.ToInt32(Session["UserID"].ToString());
             Member member = db.Members.Find(memberID);
             cause.Member = member;
-            cause.CreatedAt = DateTime.Now;
+            cause.Signers.Add(member);
             if (ModelState.IsValid)
             {
-                db.Causes.Add(cause);
+                if (cause.Image != null && cause.Image.ContentLength > 0)
+                {
+                    // TODO: Add file size checking
+                    string extension = Path.GetExtension(cause.Image.FileName).ToLower();
+                    string fileName = string.Format("{0}.{1}", Guid.NewGuid(), extension);
+                    string path = Path.Combine(Server.MapPath("~/UserImages/"), fileName);
+                    cause.Image.SaveAs(path);
+                    cause.ImageURL = Path.Combine("/UserImages/", fileName);
+                }
+                db.Causes.Add(new Cause(cause));
                 db.SaveChanges();
                 return RedirectToAction("Index");
             }
@@ -96,7 +127,7 @@ namespace Coursework.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.Forbidden);
             }
-            return View(cause);
+            return View(new CauseVM(cause));
         }
 
         // POST: Causes/Edit/5
@@ -104,7 +135,7 @@ namespace Coursework.Controllers
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "Title,Description,Pledge,Target,ImageURL")] Cause cause)
+        public ActionResult Edit([Bind(Include = "ID,Title,Description,Pledge,Target,Image")] CauseVM cause)
         {
             if (Session["UserID"] == null)
             {
@@ -114,7 +145,16 @@ namespace Coursework.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.Forbidden);
             }
-
+            // check for correct extensions
+            if (cause.Image != null && cause.Image.ContentLength > 0)
+            {
+                var allowedExtensions = new[] { ".jpg", ".jpeg", ".png" };
+                string extension = Path.GetExtension(cause.Image.FileName).ToLower();
+                if (!allowedExtensions.Contains(extension))
+                {
+                    ModelState.AddModelError("Image", "Allowed file formats are jpg, jpeg and png.");
+                }
+            }
             if (ModelState.IsValid)
             {
                 Cause currentCause = db.Causes.Find(cause.ID);
@@ -122,34 +162,20 @@ namespace Coursework.Controllers
                 currentCause.Description = cause.Description;
                 currentCause.Pledge = cause.Pledge;
                 currentCause.Target = cause.Target;
-                currentCause.ImageURL = cause.ImageURL;
+
+                // save file to disk and save path to model
+                if (cause.Image != null && cause.Image.ContentLength > 0)
+                {
+                    // TODO: Add file size checking
+                    string extension = Path.GetExtension(cause.Image.FileName).ToLower();
+                    string fileName = string.Format("{0}.{1}", Guid.NewGuid(), extension);
+                    string path = Path.Combine(Server.MapPath("~/UserImages/"), fileName);
+                    cause.Image.SaveAs(path);
+                    currentCause.ImageURL = Path.Combine("/UserImages/", fileName);
+                }
 
                 db.SaveChanges();
                 return RedirectToAction("Index");
-            }
-            return View(cause);
-        }
-
-        // GET: Causes/Delete/5
-        public ActionResult Delete(int? id)
-        {
-            if (Session["UserID"] == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.Forbidden);
-            }
-            // Casting session vars to string from MSDN, 21/09/16, https://code.msdn.microsoft.com/How-to-create-and-access-447ada98
-            if (Session["Role"].ToString() != "Admin")
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.Forbidden);
-            }
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            Cause cause = db.Causes.Find(id);
-            if (cause == null)
-            {
-                return HttpNotFound();
             }
             return View(cause);
         }
@@ -172,7 +198,7 @@ namespace Coursework.Controllers
                 Cause cause = db.Causes.Find(id);
                 db.Causes.Remove(cause);
                 db.SaveChanges();
-                return RedirectToAction("Index");
+                return new HttpStatusCodeResult(HttpStatusCode.OK);
             }
         }
 
@@ -194,12 +220,14 @@ namespace Coursework.Controllers
             int memberID = Convert.ToInt32(Session["UserID"].ToString());
             Member member = db.Members.Find(memberID);
 
-            if (!member.Causes.Contains(cause))
+            if (member.Causes.Any(signedCause => signedCause.ID == cause.ID))
             {
-                member.Causes.Add(cause);
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
 
-            return View("Details/" + id);
+            member.Causes.Add(cause);
+            db.SaveChanges();
+            return new HttpStatusCodeResult(HttpStatusCode.OK);
         }
 
         protected override void Dispose(bool disposing)

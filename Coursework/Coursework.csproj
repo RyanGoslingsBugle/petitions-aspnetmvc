@@ -163,6 +163,7 @@
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\Cause.cs" />
+    <Compile Include="Models\CauseVM.cs" />
     <Compile Include="Models\Login.cs" />
     <Compile Include="Models\Member.cs" />
     <Compile Include="Models\MemberVM.cs" />
@@ -184,8 +185,11 @@
     <Content Include="ApplicationInsights.config">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="Images\cause.jpeg" />
     <Content Include="Images\fistbump.jpeg" />
     <Content Include="Images\member.jpeg" />
+    <Content Include="Images\new_cause.jpeg" />
+    <Content Include="Images\user.jpeg" />
     <Content Include="Scripts\bootstrap.bundle.js" />
     <Content Include="Scripts\bootstrap.bundle.min.js" />
     <Content Include="Scripts\bootstrap.js" />
@@ -213,6 +217,7 @@
     <Content Include="fonts\fontawesome-webfont.woff" />
     <Content Include="fonts\fontawesome-webfont.ttf" />
     <Content Include="fonts\fontawesome-webfont.eot" />
+    <None Include="Properties\PublishProfiles\multitude - Web Deploy.pubxml" />
     <None Include="Scripts\jquery-3.3.1.intellisense.js" />
     <Content Include="Scripts\jquery-3.3.1.js" />
     <Content Include="Scripts\jquery-3.3.1.min.js" />
@@ -261,7 +266,6 @@
     <Content Include="Scripts\popper-utils.js.map" />
     <Content Include="Views\Shared\_Login.cshtml" />
     <Content Include="Views\Causes\Create.cshtml" />
-    <Content Include="Views\Causes\Delete.cshtml" />
     <Content Include="Views\Causes\Details.cshtml" />
     <Content Include="Views\Causes\Edit.cshtml" />
     <Content Include="Views\Causes\Index.cshtml" />

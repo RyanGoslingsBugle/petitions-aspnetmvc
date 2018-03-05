@@ -1,31 +1,58 @@
 ﻿using System;
 using System.Data.Entity;
-using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
+using System.Collections.Generic;
+using System.Web;
 
 namespace Coursework.Models
 {
     public class Cause
     {
-        [Required]
+        [Key]
         public int ID { get; set; }
-        [Required]
         public string Title { get; set; }
-        [Required]
         public string Description { get; set; }
-        [Required]
         public string Pledge { get; set; }
-        [Required]
         public string Target { get; set; }
         public string ImageURL { get; set; }
-        [Required]
         public DateTime CreatedAt { get; set; }
-        public Member Member { get; set; }
+        public virtual Member Member { get; set; }
+
+        public virtual ICollection<Member> Signers { get; set; }
+
+        public Cause(CauseVM causeVM)
+        {
+            Title = causeVM.Title;
+            Description = causeVM.Description;
+            Pledge = causeVM.Pledge;
+            Target = causeVM.Target;
+            ImageURL = causeVM.ImageURL;
+            CreatedAt = causeVM.CreatedAt;
+            Member = causeVM.Member;
+            Signers = causeVM.Signers;
+        }
+
+        public Cause() {
+            this.Signers = new HashSet<Member>();
+        }
     }
 
     public class CauseDBContext : DbContext
     {
         public DbSet<Member> Members { get; set; }
         public DbSet<Cause> Causes { get; set; }
+
+        protected override void OnModelCreating(DbModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<Cause>()
+                .HasMany<Member>(s => s.Signers)
+                .WithMany(c => c.Causes)
+                .Map(cs =>
+                {
+                    cs.MapLeftKey("CauseID");
+                    cs.MapRightKey("MemberID");
+                    cs.ToTable("CauseMembers");
+                });
+        }
     }
 }

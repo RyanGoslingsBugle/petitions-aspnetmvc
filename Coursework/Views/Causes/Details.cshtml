@@ -1,78 +1,93 @@
-﻿@model Coursework.Models.Cause
+﻿@model Coursework.Models.CauseVM
 
 @{
     ViewBag.Title = "Details";
 }
 
-<h2>Details</h2>
+<form id="__AjaxAntiForgeryForm" action="#" method="post">@Html.AntiForgeryToken()</form>
 
-<div>
-    <h4>Cause</h4>
-    <hr />
-    <dl class="dl-horizontal">
-        <dt>
-            @Html.DisplayNameFor(model => model.Member.City)
-        </dt>
-
-        <dd>
-            @Html.DisplayFor(model => model.Member.City)
-        </dd>
-
-        <dt>
-            @Html.DisplayNameFor(model => model.Title)
-        </dt>
-
-        <dd>
-            @Html.DisplayFor(model => model.Title)
-        </dd>
-
-        <dt>
-            @Html.DisplayNameFor(model => model.Description)
-        </dt>
-
-        <dd>
-            @Html.DisplayFor(model => model.Description)
-        </dd>
-
-        <dt>
-            @Html.DisplayNameFor(model => model.Pledge)
-        </dt>
-
-        <dd>
-            @Html.DisplayFor(model => model.Pledge)
-        </dd>
-
-        <dt>
-            @Html.DisplayNameFor(model => model.Target)
-        </dt>
-
-        <dd>
-            @Html.DisplayFor(model => model.Target)
-        </dd>
-
-        <dt>
-            @Html.DisplayNameFor(model => model.ImageURL)
-        </dt>
-
-        <dd>
-            @Html.DisplayFor(model => model.ImageURL)
-        </dd>
-
-        <dt>
-            @Html.DisplayNameFor(model => model.CreatedAt)
-        </dt>
-
-        <dd>
-            @Html.DisplayFor(model => model.CreatedAt)
-        </dd>
-
-    </dl>
+<div class="row">
+    <div class="cause-page-header mb-4">
+        <div class="profile-page-text">
+            <img src="@Html.DisplayFor(model => model.ImageURL)" class="img-thumbnail" />
+            <h2>@Html.DisplayFor(model => model.Title)</h2>
+            <p>@Html.DisplayFor(model => model.Pledge)</p>
+            @if (Session["UserID"] != null && (string)Session["UserID"] != Model.Member.ID.ToString())
+            {
+                if (ViewBag.signed == null)
+                {
+                    <button class="btn btn-primary" id="signButton" href="/causes/sign/@Model.ID">Sign</button>
+                }
+            }
+            @if ((string)Session["UserID"] == Model.Member.ID.ToString() || (string)Session["Role"] == "Admin")
+            {
+                <a class="btn btn-warning" href="/causes/edit/@Model.ID">Edit</a>
+            }
+        </div>
+    </div>
 </div>
-<p>
-    @if (Session["UserID"] != null)
-    {
-        @Html.ActionLink("Sign", "Sign", new { id = Model.ID }) 
-    }
-    @Html.ActionLink("Edit", "Edit", new { id = Model.ID }) |
-    @Html.ActionLink("Back to List", "Index")
-</p>
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-6">
+            <h4>Created by @Html.DisplayFor(model => model.Member.Name) to send to @Html.DisplayFor(model => model.Target)</h4>
+            <p>@Html.DisplayFor(model => model.Description)</p>
+        </div>
+        <div class="col-md-6 border p-3">
+            <h4>Backed by:</h4>
+            @if (Model.Signers.Count < 1)
+            {
+                <p class="lead">Nothing here yet!</p>
+            }
+            else
+            {
+                <div class="card-group">
+                    @foreach (var signer in Model.Signers)
+                    {
+                        <div class="col-sm-4">
+                            <div class="card">
+                                <a href="/members/details/@signer.ID">
+                                    <img class="card-img-top" src="@signer.ImagePath" />
+                                    <div class="card-body">
+                                        <h5 class="card-title">@signer.Name</h5>
+                                        <p class="card-subtitle">@signer.City, @signer.Country</p>
+                                    </div>
+                                </a>
+                            </div>
+                        </div>
+                    }
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@*Anti-forgery token in ajax posts, Stack Overflow, Jeremy Weir, 02/11/10, https://stackoverflow.com/questions/4074199/jquery-ajax-calls-and-the-html-antiforgerytoken*@
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('#signButton').on('click', function (event) {
+            // prevent following link
+            event.preventDefault();
+            // do ajax call to signing route
+            $.ajax({
+                url: $(this).attr('href'),
+                method: 'POST',
+                data: {
+                    id: @Model.ID.ToString(),
+                    __RequestVerificationToken: $('#__AjaxAntiForgeryForm input[name=__RequestVerificationToken]').val()
+                },
+                success: function (result) {
+                    setTimeout(function () {
+                        window.location.reload(true);
+                    });
+                },
+                error: function (error) {
+                    console.log(error);
+                }
+            });
+            return false;
+        })
+    });
+
+</script>

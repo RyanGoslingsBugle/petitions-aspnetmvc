@@ -1,7 +1,7 @@
 ﻿@model IEnumerable<Coursework.Models.Member>
 
 @{
-    ViewBag.Title = "Index";
+    ViewBag.Title = "Members";
 }
 
 
@@ -10,7 +10,8 @@
             <div class="row mx-2">
                 <div class="col-md-8">
                     <h2 class="display-4">Our Members</h2>
-                    <p class="lead">We value every one of our members, and their capacity to make a better world through collective action.</p>
+                    <p>We value every one of our members, and their capacity to make a better world through collective action. Day by day, they're making a new world by making commitments to work together and strive for progress.</p>
+                    <p>At Multitude, we pledge to continue supporting our members in their efforts to fight global warming and injustice, as well as the thousands of other problems we see around us.</p>
                     <hr class="my-4" />
                     <p class="lead">Why not join us today and pledge your support?</p>
                 </div>
@@ -25,18 +26,19 @@
 
     @foreach (var item in Model)
     {
-    <div class="col-sm-2">
-        <div class="card">
-            <img class="card-img-top" src="@item.ImagePath" />
-            <div class="card-body">
-                <h5 class="card-title">@item.Name</h5>
-                <p class="card-subtitle">@item.Email</p>
-                <p class="card-text">@item.City</p>
-                <p class="card-text">@item.Country</p>
-                <a href="/members/details/@item.ID" class="btn btn-primary">Details</a>
+        var path = item.ImagePath == null ? "/images/user.jpeg" : item.ImagePath;
+        <div class="col-md-2">
+            <div class="card">
+                <img class="card-img-top" src="@path" />
+                <div class="card-body">
+                    <h5 class="card-title">@item.Name</h5>
+                    <p class="card-subtitle">@item.Email</p>
+                    <p class="card-text">@item.City</p>
+                    <p class="card-text">@item.Country</p>
+                    <a href="/members/details/@item.ID" class="btn btn-primary">Details</a>
+                </div>
             </div>
         </div>
-    </div>
     }
 
 </div>

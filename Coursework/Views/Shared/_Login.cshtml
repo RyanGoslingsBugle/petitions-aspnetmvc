@@ -27,18 +27,24 @@
 
                 <div id="signup-content" class="d-none">
                     @using (Html.BeginForm("Create", "Members", FormMethod.Post, new { id = "signupForm" }))
-        {
-            @Html.AntiForgeryToken()
-            <div class="form-group">
-                <input class="form-control" name="Name" placeholder="User Name" type="text" required />
-            </div>
-            <div class="form-group">
-                <input class="form-control" name="Email" placeholder="Email Address" type="email" required />
-            </div>
-            <div class="form-group">
-                <input class="form-control" name="Password" placeholder="Password" type="password" required />
-            </div>
-}
+                    {
+                        @Html.AntiForgeryToken()
+                        <div class="form-group">
+                            <input class="form-control" name="Name" placeholder="User Name" type="text" required />
+                        </div>
+                        <div class="form-group">
+                            <input class="form-control" name="City" placeholder="City" type="text" required />
+                        </div>
+                        <div class="form-group">
+                            <input class="form-control" name="Country" placeholder="Country" type="text" required />
+                        </div>
+                        <div class="form-group">
+                            <input class="form-control" name="Email" placeholder="Email Address" type="email" required />
+                        </div>
+                        <div class="form-group">
+                            <input class="form-control" name="Password" placeholder="Password" type="password" required />
+                        </div>
+                    }
                 </div>
                 <div id="errorDiv" class="alert alert-danger d-none"></div>
                 <div id="successDiv" class="alert alert-success d-none"></div>
@@ -173,6 +179,9 @@
                 $('#loginSubmit').removeClass('d-none');
                 $('#signup-tab a').removeClass('active');
                 $('#login-tab a').addClass('active');
+                if (!$('#errorDiv').hasClass('d-none')) {
+                    $('#errorDiv').addClass('d-none');
+                }
             }
         });
 
@@ -185,6 +194,9 @@
                 $('#loginSubmit').addClass('d-none');
                 $('#signup-tab a').addClass('active');
                 $('#login-tab a').removeClass('active');
+                if (!$('#errorDiv').hasClass('d-none')) {
+                    $('#errorDiv').addClass('d-none');
+                }
             }
         });
     });

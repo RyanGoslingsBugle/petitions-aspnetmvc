@@ -34,7 +34,8 @@ namespace Coursework.Controllers
             {
                 return HttpNotFound();
             }
-            return View(new MemberVM(member));
+            ICollection<Coursework.Models.Cause> createdCauses = member.Causes.Where(cause => cause.Member.ID == member.ID).ToList();
+            return View(new MemberVM(member, createdCauses));
         }
 
         // Password hashing from Stack Overflow, Kevin Nelson, 16/08/17, https://stackoverflow.com/questions/45723140/how-to-salt-and-compare-password-in-asp-net-mvc
