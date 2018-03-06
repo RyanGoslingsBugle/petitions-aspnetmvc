@@ -136,3 +136,10 @@
         font-size: 3rem;
     }
 }
+
+@media (max-width:810px) {
+    .nav-tabs > li {
+        width: 50%;
+        text-align: center;
+    }
+}

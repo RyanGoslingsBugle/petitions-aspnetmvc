@@ -1,13 +1,23 @@
-﻿<!DOCTYPE html>
+﻿@{ 
+    ViewBag.Url = HttpContext.Current.Request.RawUrl.ToString();
+    ViewBag.Image = "http://multitude.azurewebsites.net/images/index.jpeg";
+}
+
+<!DOCTYPE html>
 <html>
 <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewBag.Title - Multitude</title>
     @Styles.Render("~/Content/css")
     @Scripts.Render("~/bundles/modernizr")
     @Scripts.Render("~/bundles/jquery")
     <script type="text/javascript" src="//platform-api.sharethis.com/js/sharethis.js#property=5a9e8fba9c502900133c19c0&product=inline-share-buttons"></script>
+    <meta property="og:title" content="@ViewBag.Title" />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="@ViewBag.Url" />
+    <meta property="og:image" content="@ViewBag.Image" />
+    <meta property="og:site_name" content="Multitude" />
 </head>
 <body>
     <!-- Navbar -->
