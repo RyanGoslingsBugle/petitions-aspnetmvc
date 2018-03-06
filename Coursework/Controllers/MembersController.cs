@@ -104,15 +104,6 @@ namespace Coursework.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.Forbidden);
             }
-            if (member.Image != null && member.Image.ContentLength > 0)
-            {
-                var allowedExtensions = new[] { ".jpg", ".jpeg", ".png" };
-                string extension = Path.GetExtension(member.Image.FileName).ToLower();
-                if (!allowedExtensions.Contains(extension))
-                {
-                    ModelState.AddModelError("Image", "Allowed file formats are jpg, jpeg and png.");
-                }
-            }
             if (ModelState.IsValid)
             {
                 Member currentMember = db.Members.Find(member.ID);
@@ -121,20 +112,29 @@ namespace Coursework.Controllers
                 currentMember.Email = member.Email;
                 currentMember.City = member.City;
                 currentMember.Country = member.Country;
+
                 if (member.Password != null)
                 {
                     currentMember.Password = Crypto.HashPassword(member.Password);
                 }
+
                 // Image upload courtesy of Stack Overflow, Stephen Muecke, 10/03/2016, https://stackoverflow.com/questions/35904830/asp-net-mvc-upload-image
-                if (member.Image != null && member.Image.ContentLength > 0)
+                Stream st = member.Image.InputStream;
+                string extension = Path.GetExtension(member.Image.FileName).ToLower();
+                string fileName = string.Format("{0}{1}", Guid.NewGuid(), extension);
+                string bucketName = "multitude";
+                string s3dir = "UserImages";
+                AmazonUploader uploader = new AmazonUploader();
+                bool a = uploader.sendMyFileToS3(st, bucketName, s3dir, fileName);
+
+                if (a != true)
                 {
-                    // TODO: Add file size checking
-                    string extension = Path.GetExtension(member.Image.FileName).ToLower();
-                    string fileName = string.Format("{0}.{1}", Guid.NewGuid(), extension);
-                    string path = Path.Combine(Server.MapPath("~/UserImages/"), fileName);
-                    member.Image.SaveAs(path);
-                    currentMember.ImagePath = Path.Combine("/UserImages/", fileName);
+                    ModelState.AddModelError("Image", "Image upload to S3 failed.");
+                    return View(member);
                 }
+
+                currentMember.ImagePath = "https://s3-eu-west-1.amazonaws.com/multitude/UserImages/" + fileName;
+
                 db.SaveChanges();
                 return RedirectToAction("Index");
             }

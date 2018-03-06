@@ -26,6 +26,7 @@ namespace Coursework.Models
 
         public virtual ICollection<Member> Signers { get; set; }
 
+        [AttachmentNotRequired]
         public HttpPostedFileBase Image { get; set; }
 
         public CauseVM(Cause cause)

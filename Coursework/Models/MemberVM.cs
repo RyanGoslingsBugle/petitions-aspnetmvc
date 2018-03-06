@@ -27,6 +27,7 @@ namespace Coursework.Models
         public virtual ICollection<Cause> Causes { get; set; }
         public virtual ICollection<Cause> createdCauses { get; set; }
 
+        [Attachment]
         public HttpPostedFileBase Image { get; set; }
 
         public MemberVM (Member member)

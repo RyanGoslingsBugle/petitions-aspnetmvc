@@ -261,3 +261,4 @@ __pycache__/
 *.pyc
 
 ConnectionStrings.config
+AppSettingsSecrets.config

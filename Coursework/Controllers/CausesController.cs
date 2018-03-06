@@ -67,41 +67,38 @@ namespace Coursework.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.Forbidden);
             }
-            if (cause.Image != null && cause.Image.ContentLength > 0)
-            {
-                var allowedExtensions = new[] { ".jpg", ".jpeg", ".png" };
-                string extension = Path.GetExtension(cause.Image.FileName).ToLower();
-                if (!allowedExtensions.Contains(extension))
-                {
-                    ModelState.AddModelError("Image", "Allowed file formats are jpg, jpeg and png.");
-                }
-            } else
-            {
-                ModelState.AddModelError("Image", "An image is required.");
-            }
+
             cause.CreatedAt = DateTime.Now;
             int memberID = Convert.ToInt32(Session["UserID"].ToString());
             Member member = db.Members.Find(memberID);
             cause.Member = member;
             cause.Signers.Add(member);
+            if (cause.Image == null || cause.Image.ContentLength <= 0)
+            {
+                ModelState.AddModelError("Image", "Image is required.");
+            }
             if (ModelState.IsValid)
             {
-                if (cause.Image != null && cause.Image.ContentLength > 0)
+                // Save file to S3 and add path to model
+                Stream st = cause.Image.InputStream;
+                string extension = Path.GetExtension(cause.Image.FileName).ToLower();
+                string fileName = string.Format("{0}{1}", Guid.NewGuid(), extension);
+                string bucketName = "multitude";
+                string s3dir = "UserImages";
+                AmazonUploader uploader = new AmazonUploader();
+                bool a = uploader.sendMyFileToS3(st, bucketName, s3dir, fileName);
+
+                if (a != true)
                 {
-                    // TODO: Add file size checking
-                    string extension = Path.GetExtension(cause.Image.FileName).ToLower();
-                    string fileName = string.Format("{0}.{1}", Guid.NewGuid(), extension);
-                    string path = Path.Combine(Server.MapPath("~/UserImages/"), fileName);
-                    cause.Image.SaveAs(path);
-                    cause.ImageURL = Path.Combine("/UserImages/", fileName);
+                    ModelState.AddModelError("Image", "Image upload to S3 failed.");
+                    return View(cause);
                 }
+
+                cause.ImageURL = "https://s3-eu-west-1.amazonaws.com/multitude/UserImages/" + fileName;
+
                 db.Causes.Add(new Cause(cause));
                 db.SaveChanges();
                 return RedirectToAction("Index");
-            }
-            foreach (var error in ViewData.ModelState.Values.SelectMany(modelState => modelState.Errors))
-            {
-                System.Diagnostics.Debug.WriteLine(error.ErrorMessage);
             }
 
             return View(cause);
@@ -145,16 +142,6 @@ namespace Coursework.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.Forbidden);
             }
-            // check for correct extensions
-            if (cause.Image != null && cause.Image.ContentLength > 0)
-            {
-                var allowedExtensions = new[] { ".jpg", ".jpeg", ".png" };
-                string extension = Path.GetExtension(cause.Image.FileName).ToLower();
-                if (!allowedExtensions.Contains(extension))
-                {
-                    ModelState.AddModelError("Image", "Allowed file formats are jpg, jpeg and png.");
-                }
-            }
             if (ModelState.IsValid)
             {
                 Cause currentCause = db.Causes.Find(cause.ID);
@@ -162,16 +149,26 @@ namespace Coursework.Controllers
                 currentCause.Description = cause.Description;
                 currentCause.Pledge = cause.Pledge;
                 currentCause.Target = cause.Target;
-
-                // save file to disk and save path to model
+                
+                // if an image was attached, do upload to S3
                 if (cause.Image != null && cause.Image.ContentLength > 0)
                 {
-                    // TODO: Add file size checking
+                    // Save file to S3 and add path to model
+                    Stream st = cause.Image.InputStream;
                     string extension = Path.GetExtension(cause.Image.FileName).ToLower();
-                    string fileName = string.Format("{0}.{1}", Guid.NewGuid(), extension);
-                    string path = Path.Combine(Server.MapPath("~/UserImages/"), fileName);
-                    cause.Image.SaveAs(path);
-                    currentCause.ImageURL = Path.Combine("/UserImages/", fileName);
+                    string fileName = string.Format("{0}{1}", Guid.NewGuid(), extension);
+                    string bucketName = "multitude";
+                    string s3dir = "UserImages";
+                    AmazonUploader uploader = new AmazonUploader();
+                    bool a = uploader.sendMyFileToS3(st, bucketName, s3dir, fileName);
+
+                    if (a != true)
+                    {
+                        ModelState.AddModelError("Image", "Image upload to S3 failed.");
+                        return View(cause);
+                    }
+
+                    currentCause.ImageURL = "https://s3-eu-west-1.amazonaws.com/multitude/UserImages/" + fileName;
                 }
 
                 db.SaveChanges();
