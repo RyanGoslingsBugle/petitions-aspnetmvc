@@ -1,6 +1,7 @@
 ﻿@{ 
-    ViewBag.Url = HttpContext.Current.Request.RawUrl.ToString();
+    ViewBag.Url = Request.Url.AbsoluteUri;
     ViewBag.Image = "http://multitude.azurewebsites.net/images/index.jpeg";
+    ViewBag.Description = "Help make the world better today.";
 }
 
 <!DOCTYPE html>
@@ -17,6 +18,8 @@
     <meta property="og:type" content="website" />
     <meta property="og:url" content="@ViewBag.Url" />
     <meta property="og:image" content="@ViewBag.Image" />
+    <meta property="og:description" content="@ViewBag.Description" />
+    <meta property="fb:app_id" content="175170863265181" />
     <meta property="og:site_name" content="Multitude" />
 </head>
 <body>
