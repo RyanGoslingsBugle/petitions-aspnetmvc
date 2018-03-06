@@ -27,7 +27,7 @@ namespace Coursework.Controllers
         {
             if (id == null)
             {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                return RedirectToAction("Index");
             }
             Cause cause = db.Causes.Find(id);
             if (Session["UserID"] != null)
@@ -112,7 +112,7 @@ namespace Coursework.Controllers
         {
             if (id == null)
             {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                return RedirectToAction("Index");
             }
             if (Session["UserID"] == null)
             {
@@ -183,7 +183,7 @@ namespace Coursework.Controllers
         // POST: Causes/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public ActionResult DeleteConfirmed(int id)
+        public ActionResult Delete(int id)
         {
             if (Session["UserID"] == null)
             {

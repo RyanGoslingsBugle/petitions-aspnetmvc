@@ -21,56 +21,58 @@
 </div>
 
 <div class="container">
-    <div class="row">
-        <h4>Created Causes</h4>
-    </div>
-    <div class="row">
+        
+    <div class="row my-3">
+        <div class="col-md-12 mb-2">
+            <h4>Created Causes</h4>
+        </div>
         @if (Model.createdCauses.Count < 1)
-        {
-            <p class="lead">Nothing here yet!</p>
-        }
-        else
-        {
-            foreach (var cause in Model.createdCauses)
-            {
-                <div class="col-md-4">
-                    <div class="card">
-                        <img class="card-img-top" src="@cause.ImageURL" />
-                        <div class="card-body">
-                            <h5 class="card-title">@cause.Title</h5>
-                            <p class="card-subtitle">Started by <a href="/members/details/@cause.Member.ID">@cause.Member.Name</a></p>
-                            <p class="card-text">@cause.Pledge</p>
-                            <a href="/causes/details/@cause.ID" class="btn btn-primary">Details</a>
-                        </div>
-                    </div>
+    {
+        <p class="lead">Nothing here yet!</p>
+}
+else
+{
+    foreach (var cause in Model.createdCauses)
+    {
+        <div class="col-md-4">
+            <div class="card">
+                <img class="card-img-top" src="@cause.ImageURL" />
+                <div class="card-body">
+                    <h5 class="card-title">@cause.Title</h5>
+                    <p class="card-subtitle">Started by <a href="/members/details/@cause.Member.ID">@cause.Member.Name</a></p>
+                    <p class="card-text">@cause.Pledge</p>
+                    <a href="/causes/details/@cause.ID" class="btn btn-primary">Details</a>
                 </div>
-            }
-        }
+            </div>
+        </div>
+}
+}
     </div>
-    <div class="row">
-        <h4>Backed Causes</h4>
-    </div>
-    <div class="row">
+    <div class="row my-3">
+        <div class="col-md-12 mb-2">
+            <h4>Backed Causes</h4>
+        </div>
+        
         @if (Model.Causes.Count < 1)
-        {
-            <p class="lead">Nothing here yet!</p>
-        }
-        else
-        {
-            foreach (var cause in Model.Causes)
-            {
-                <div class="col-md-4">
-                    <div class="card">
-                        <img class="card-img-top" src="@cause.ImageURL" />
-                        <div class="card-body">
-                            <h5 class="card-title">@cause.Title</h5>
-                            <p class="card-subtitle">Started by <a href="/members/details/@cause.Member.ID">@cause.Member.Name</a></p>
-                            <p class="card-text">@cause.Pledge</p>
-                            <a href="/causes/details/@cause.ID" class="btn btn-primary">Details</a>
-                        </div>
-                    </div>
+    {
+        <p class="lead">Nothing here yet!</p>
+}
+else
+{
+    foreach (var cause in Model.Causes)
+    {
+        <div class="col-md-4">
+            <div class="card">
+                <img class="card-img-top" src="@cause.ImageURL" />
+                <div class="card-body">
+                    <h5 class="card-title">@cause.Title</h5>
+                    <p class="card-subtitle">Started by <a href="/members/details/@cause.Member.ID">@cause.Member.Name</a></p>
+                    <p class="card-text">@cause.Pledge</p>
+                    <a href="/causes/details/@cause.ID" class="btn btn-primary">Details</a>
                 </div>
-            }
-        }
+            </div>
+        </div>
+}
+}
     </div>
 </div>

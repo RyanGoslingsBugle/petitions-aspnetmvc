@@ -71,7 +71,7 @@ namespace Coursework.Controllers
         {
             if (id == null)
             {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                return RedirectToAction("Index");
             }
             if (Session["UserID"] == null)
             {
