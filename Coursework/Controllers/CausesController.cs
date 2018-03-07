@@ -45,6 +45,21 @@ namespace Coursework.Controllers
             return View(new CauseVM(cause));
         }
 
+        // GET: Causes/GetUpdate/5
+        public ActionResult GetUpdate(int? id)
+        {
+            if (id == null)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+            Cause cause = db.Causes.Find(id);
+            if (cause == null)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.NotFound);
+            }
+            return PartialView("Signers", new CauseVM(cause));
+        } 
+
         // GET: Causes/Create
         public ActionResult Create()
         {

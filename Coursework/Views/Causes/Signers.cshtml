@@ -1,0 +1,33 @@
+﻿@model Coursework.Models.CauseVM
+
+@{
+    string signerText = Model.Signers.Count == 1 ? "1 person" : Model.Signers.Count.ToString() + " people";
+}
+
+<div class="border p-3">
+    <h4 class="mb-3">Backed by @signerText</h4>
+    @if (Model.Signers.Count < 1)
+    {
+        <p class="lead">Nothing here yet!</p>
+    }
+    else
+    {
+        <div class="card-group">
+            @foreach (var signer in Model.Signers)
+            {
+                var path = signer.ImagePath == null ? "/images/user.jpeg" : signer.ImagePath;
+                <div class="col-sm-4">
+                    <div class="card">
+                        <a href="/members/details/@signer.ID">
+                            <img class="card-img-top" src="@path" />
+                            <div class="card-body">
+                                <h5 class="card-title">@signer.Name</h5>
+                                <p class="card-subtitle">@signer.City, @signer.Country</p>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>
