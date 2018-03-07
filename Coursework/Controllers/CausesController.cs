@@ -17,9 +17,17 @@ namespace Coursework.Controllers
         private CauseDBContext db = new CauseDBContext();
 
         // GET: Causes
-        public ActionResult Index()
+        public ActionResult Index(string q)
         {
-            return View(db.Causes.ToList());
+            var causes = db.Causes.ToList();
+
+            if (!string.IsNullOrEmpty(q))
+            {
+                causes = causes.Where(c => c.Title.Contains(q)).ToList();
+                ViewBag.search = q;
+            }
+
+            return View(causes);
         }
 
         // GET: Causes/Details/5
@@ -45,6 +53,7 @@ namespace Coursework.Controllers
             return View(new CauseVM(cause));
         }
 
+        // jQuery updating via ajax partial reloads courtesy of Stack Overflow, mattytommo, 28/02/13, https://stackoverflow.com/questions/15146212/can-you-just-update-a-partial-view-instead-of-full-page-post
         // GET: Causes/GetUpdate/5
         public ActionResult GetUpdate(int? id)
         {

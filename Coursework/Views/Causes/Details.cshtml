@@ -77,6 +77,7 @@
             return false;
         });
 
+        // self-invokoing timeout function courtesy of stack overflow, drewish, 19/02/11, https://stackoverflow.com/questions/5052543/how-to-fire-ajax-request-periodically
         (function worker() {
             $.ajax({
                 url: '/causes/getupdate/@Model.ID',

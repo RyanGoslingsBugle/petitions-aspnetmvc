@@ -3,6 +3,7 @@
 @{
     ViewBag.Title = "Causes";
     var topList = Model.Take(5).ToList();
+    string topText = ViewBag.search == null ? "Our Latest Campaigns" : "Search results for " + ViewBag.search;
 }
     <div class="row my-4" id="causesCarouselContainer">
         <div id="causesTopCarousel" class="carousel slide m-auto" data-ride="carousel">
@@ -34,7 +35,7 @@
     <div class="container">
 
         <div class="row">
-            <h2>Our Latest Campaigns</h2>
+            <h2>@topText</h2>
         </div>
 
         <div class="row">
@@ -42,23 +43,24 @@
 
             @foreach (var item in Model)
             {
-            <div class="col-md-4">
-                <div class="card">
-                    <img class="card-img-top h-100" src="@item.ImageURL" />
-                    <div class="card-body">
-                        <h5 class="card-title">@item.Title</h5>
-                        <p class="card-subtitle">Started by @item.Member.Name</p>
-                        <p class="card-text">@item.Pledge</p>
-                        <p class="card-text">To be presented to @item.Target</p>
-                        <a href="/causes/details/@item.ID" class="btn btn-primary">Details</a>
-                        <button type="button" class="btn btn-outline-primary"><span class="badge badge-light">@item.Signers.Count</span> supporters</button>
+                <div class="col-md-4">
+                    <div class="card">
+                        <img class="card-img-top h-100" src="@item.ImageURL" />
+                        <div class="card-body">
+                            <h5 class="card-title">@item.Title</h5>
+                            <p class="card-subtitle">Started by @item.Member.Name</p>
+                            <p class="card-text">@item.Pledge</p>
+                            <p class="card-text">To be presented to @item.Target</p>
+                            <a href="/causes/details/@item.ID" class="btn btn-primary">Details</a>
+                            <button type="button" class="btn btn-outline-primary"><span class="badge badge-light">@item.Signers.Count</span> supporters</button>
+                        </div>
                     </div>
                 </div>
-            </div>
             }
 
-        </div>
+            </div>
 
+        </div>
     </div>
 
 <script type="text/javascript">
