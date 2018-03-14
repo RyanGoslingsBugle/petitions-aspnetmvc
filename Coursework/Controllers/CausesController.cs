@@ -23,7 +23,7 @@ namespace Coursework.Controllers
 
             if (!string.IsNullOrEmpty(q))
             {
-                causes = causes.Where(c => c.Title.Contains(q)).ToList();
+                causes = causes.Where(c => c.Title.ToLower().Contains(q.ToLower())).ToList();
                 ViewBag.search = q;
             }
 
