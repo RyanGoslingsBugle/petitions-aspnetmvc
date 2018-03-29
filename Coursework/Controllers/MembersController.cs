@@ -118,22 +118,27 @@ namespace Coursework.Controllers
                     currentMember.Password = Crypto.HashPassword(member.Password);
                 }
 
-                // Image upload courtesy of Stack Overflow, Stephen Muecke, 10/03/2016, https://stackoverflow.com/questions/35904830/asp-net-mvc-upload-image
-                Stream st = member.Image.InputStream;
-                string extension = Path.GetExtension(member.Image.FileName).ToLower();
-                string fileName = string.Format("{0}{1}", Guid.NewGuid(), extension);
-                string bucketName = "multitude";
-                string s3dir = "UserImages";
-                AmazonUploader uploader = new AmazonUploader();
-                bool a = uploader.sendMyFileToS3(st, bucketName, s3dir, fileName);
-
-                if (a != true)
+                // if an image was attached, do upload to S3
+                if (member.Image != null && member.Image.ContentLength > 0)
                 {
-                    ModelState.AddModelError("Image", "Image upload to S3 failed.");
-                    return View(member);
-                }
 
-                currentMember.ImagePath = "https://s3-eu-west-1.amazonaws.com/multitude/UserImages/" + fileName;
+                    // Image upload courtesy of Stack Overflow, Stephen Muecke, 10/03/2016, https://stackoverflow.com/questions/35904830/asp-net-mvc-upload-image
+                    Stream st = member.Image.InputStream;
+                    string extension = Path.GetExtension(member.Image.FileName).ToLower();
+                    string fileName = string.Format("{0}{1}", Guid.NewGuid(), extension);
+                    string bucketName = "multitude";
+                    string s3dir = "UserImages";
+                    AmazonUploader uploader = new AmazonUploader();
+                    bool a = uploader.sendMyFileToS3(st, bucketName, s3dir, fileName);
+
+                    if (a != true)
+                    {
+                        ModelState.AddModelError("Image", "Image upload to S3 failed.");
+                        return View(member);
+                    }
+
+                    currentMember.ImagePath = "https://s3-eu-west-1.amazonaws.com/multitude/UserImages/" + fileName;
+                }
 
                 db.SaveChanges();
                 return RedirectToAction("Index");

@@ -10,9 +10,11 @@ namespace Coursework.Models
     {
         [Required]
         [Display(Name = "Email Address")]
+        [EmailAddress]
         public string Email { get; set; }
         [Required]
         [Display(Name = "Password")]
+        [StringLength(255, MinimumLength = 1)]
         public string Password { get; set; }
     }
 }

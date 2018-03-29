@@ -158,17 +158,17 @@ namespace Coursework.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Edit([Bind(Include = "ID,Title,Description,Pledge,Target,Image")] CauseVM cause)
         {
+            Cause currentCause = db.Causes.Find(cause.ID);
             if (Session["UserID"] == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.Forbidden);
             }
-            if (Convert.ToInt32(Session["UserID"].ToString()) != cause.Member.ID && (string)Session["Role"] != "Admin")
+            if (Convert.ToInt32(Session["UserID"].ToString()) != currentCause.Member.ID && (string)Session["Role"] != "Admin")
             {
                 return new HttpStatusCodeResult(HttpStatusCode.Forbidden);
             }
             if (ModelState.IsValid)
             {
-                Cause currentCause = db.Causes.Find(cause.ID);
                 currentCause.Title = cause.Title;
                 currentCause.Description = cause.Description;
                 currentCause.Pledge = cause.Pledge;

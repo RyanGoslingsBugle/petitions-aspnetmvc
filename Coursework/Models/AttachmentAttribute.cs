@@ -48,18 +48,21 @@ namespace Coursework.Models
         {
             HttpPostedFileBase file = value as HttpPostedFileBase;
 
-            // The maximum allowed file size is 10MB.
-            if (file.ContentLength > 2 * 1024 * 1024)
+            if (file != null)
             {
-                return new ValidationResult("Maximum allowed file size is 2MB.");
-            }
+                // The maximum allowed file size is 10MB.
+                if (file.ContentLength > 2 * 1024 * 1024)
+                {
+                    return new ValidationResult("Maximum allowed file size is 2MB.");
+                }
 
-            // Check extensions
-            string ext = Path.GetExtension(file.FileName);
-            var allowedExtensions = new[] { ".jpg", ".jpeg", ".png" };
-            if (String.IsNullOrEmpty(ext) || !allowedExtensions.Contains(ext.ToLower()))
-            {
-                return new ValidationResult("Allowed file formats are jpg, jpeg and png.");
+                // Check extensions
+                string ext = Path.GetExtension(file.FileName);
+                var allowedExtensions = new[] { ".jpg", ".jpeg", ".png" };
+                if (String.IsNullOrEmpty(ext) || !allowedExtensions.Contains(ext.ToLower()))
+                {
+                    return new ValidationResult("Allowed file formats are jpg, jpeg and png.");
+                }
             }
 
             // Everything OK.

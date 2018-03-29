@@ -12,22 +12,28 @@ namespace Coursework.Models
         public int ID { get; set; }
         [Required]
         [Display(Name = "User Name")]
+        [StringLength(255, MinimumLength = 1)]
         public string Name { get; set; }
         [Required]
         [Display(Name = "Email Address")]
+        [EmailAddress]
         public string Email { get; set; }
         [Display(Name = "Password")]
+        [StringLength(255, MinimumLength = 1)]
         public string Password { get; set; }
         [Required]
+        [StringLength(255, MinimumLength = 1)]
         public string City { get; set; }
         [Required]
+        [StringLength(255, MinimumLength = 1)]
         public string Country { get; set; }
         public string ImagePath { get; set; }
 
         public virtual ICollection<Cause> Causes { get; set; }
         public virtual ICollection<Cause> createdCauses { get; set; }
 
-        [Attachment]
+        //custom validation, check AttachmentAttributes.cs for details
+        [AttachmentNotRequired]
         public HttpPostedFileBase Image { get; set; }
 
         public MemberVM (Member member)
