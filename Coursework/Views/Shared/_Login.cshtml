@@ -85,7 +85,7 @@
                         if (!ertarget.hasClass('d-none')) {
                             ertarget.addClass('d-none');
                         }
-                        suctarget.html('<p>Login was successful, welcome back.</p>');
+                        suctarget.html(result.message);
 
                         // disable submit button
                         $('#loginSubmit').prop('disabled', true).addClass('disabled');
@@ -93,7 +93,7 @@
                         // auto-close after timer
                         setTimeout(function () {
                             $('#closeButton').click();
-                        }, 5000);
+                        }, 2000);
                     },
                     // handle error with notification callbacks
                     error: function (errorResult) {
@@ -103,13 +103,8 @@
                             target.removeClass('d-none');
                         }
 
-                        if (errorResult.status == 403) {
-                            target.html('<p>The username/password was incorrect. Please try again.</p>');
-                            console.log(errorResult);
-                        } else {
-                            target.html('<p>An error occured in the login route.</p>');
-                            console.log(errorResult);
-                        }
+                        target.html(errorResult.responseJSON.message);
+                        console.log(errorResult);
                     }
                 });
                 return false;

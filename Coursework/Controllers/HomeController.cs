@@ -28,9 +28,12 @@ namespace Coursework.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Login(Login loginUser)
         {
+            Response.ContentType = "application/json; charset=utf-8";
+
             if (!ModelState.IsValid)
             {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                Response.StatusCode = 400;
+                return Json(new { message = "Bad request, please check your input and try again." }, JsonRequestBehavior.AllowGet);
             }
 
             using (CauseDBContext db = new CauseDBContext())
@@ -41,11 +44,13 @@ namespace Coursework.Controllers
                     Session["UserID"] = matchedUsers.ID.ToString();
                     Session["UserName"] = matchedUsers.Name.ToString();
                     Session["Role"] = matchedUsers.Role.ToString();
-                    return new HttpStatusCodeResult(HttpStatusCode.OK);
+                    Response.StatusCode = 200;
+                    return Json(new { message = "Login complete, welcome back." }, JsonRequestBehavior.AllowGet);
                 }
                 else
                 {
-                    return new HttpStatusCodeResult(HttpStatusCode.Forbidden);
+                    Response.StatusCode = 403;
+                    return Json(new { message = "The username/password was incorrect. Please try again." }, JsonRequestBehavior.AllowGet);
                 }
             }
         }
