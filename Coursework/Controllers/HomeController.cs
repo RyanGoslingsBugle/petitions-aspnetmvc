@@ -7,7 +7,7 @@ using System.Web;
 using System.Web.Helpers;
 using System.Web.Mvc;
 using Coursework.Models;
-using PagedList;
+using X.PagedList;
 
 namespace Coursework.Controllers
 {
