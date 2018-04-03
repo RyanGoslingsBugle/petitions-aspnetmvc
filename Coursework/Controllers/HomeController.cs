@@ -24,10 +24,13 @@ namespace Coursework.Controllers
         }
 
         // Password hashing from Stack Overflow, Kevin Nelson, 16/08/17, https://stackoverflow.com/questions/45723140/how-to-salt-and-compare-password-in-asp-net-mvc
+        // Wrote my own login logic rather than using UserManager as an exercise, and for an excuse to return Json
+        // obviously would use built-ins for proper security in production
+        // I've been working with Node for too long
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Login(Login loginUser)
+        public JsonResult Login(Login loginUser)
         {
             Response.ContentType = "application/json; charset=utf-8";
 
@@ -69,6 +72,8 @@ namespace Coursework.Controllers
 
         // GET: Return a paged list of all cause objects
         // Paging courtesy ITworld, Matthew Mombrea, 05/08/15, https://www.itworld.com/article/2956575/development/how-to-sort-search-and-paginate-tables-in-asp-net-mvc-5.html
+        // Admin currently only applies to Causes, should be broken out so as to include Users as well
+
         public ActionResult Admin(int page = 1, int pageSize = 25)
         {
             if (Session["Role"] != null && Session["Role"].ToString() == "Admin")

@@ -37,6 +37,9 @@ namespace Coursework.Models
         }
     }
 
+    // Defining the DBContext inside one of the models is messy, but made the most sense in development
+    // Would move it out into own class in production
+
     public class CauseDBContext : DbContext
     {
         public DbSet<Member> Members { get; set; }

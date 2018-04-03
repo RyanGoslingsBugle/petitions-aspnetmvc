@@ -55,6 +55,7 @@ namespace Coursework.Controllers
         }
 
         // jQuery updating via ajax partial reloads courtesy of Stack Overflow, mattytommo, 28/02/13, https://stackoverflow.com/questions/15146212/can-you-just-update-a-partial-view-instead-of-full-page-post
+        // Returns a partial with only the number and list of signatures to a specified cause - used to update cause page with live list
         // GET: Causes/GetUpdate/5
         public ActionResult GetUpdate(int? id)
         {
@@ -228,15 +229,19 @@ namespace Coursework.Controllers
         // Record signing of cause by member
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Sign(int? id)
+        public JsonResult Sign(int? id)
         {
+            Response.ContentType = "application/json; charset=utf-8";
+
             if (id == null)
             {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                Response.StatusCode = 400;
+                return Json(new { message = "Bad request, please check your input and try again." }, JsonRequestBehavior.AllowGet);
             }
             if (Session["UserID"] == null)
             {
-                return new HttpStatusCodeResult(HttpStatusCode.Forbidden);
+                Response.StatusCode = 403;
+                return Json(new { message = "Access forbidden." }, JsonRequestBehavior.AllowGet);
             }
             Cause cause = db.Causes.Find(id);
             int memberID = Convert.ToInt32(Session["UserID"].ToString());
@@ -244,12 +249,14 @@ namespace Coursework.Controllers
 
             if (member.Causes.Any(signedCause => signedCause.ID == cause.ID))
             {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                Response.StatusCode = 400;
+                return Json(new { message = "Bad request, please check your input and try again." }, JsonRequestBehavior.AllowGet);
             }
 
             member.Causes.Add(cause);
             db.SaveChanges();
-            return new HttpStatusCodeResult(HttpStatusCode.OK);
+            Response.StatusCode = 200;
+            return Json(new { message = "Signed up to this cause successfully, why not share with your friends?" }, JsonRequestBehavior.AllowGet);
         }
 
         protected override void Dispose(bool disposing)
