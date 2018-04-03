@@ -11,6 +11,7 @@ using X.PagedList;
 
 namespace Coursework.Controllers
 {
+    [RequireHttps]
     public class HomeController : Controller
     {
         // import database connection

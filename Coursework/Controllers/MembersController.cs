@@ -12,6 +12,7 @@ using Coursework.Models;
 
 namespace Coursework.Controllers
 {
+    [RequireHttps]
     public class MembersController : Controller
     {
         private CauseDBContext db = new CauseDBContext();
