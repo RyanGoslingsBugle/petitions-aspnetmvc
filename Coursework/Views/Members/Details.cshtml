@@ -12,7 +12,7 @@
             <h2>@Html.DisplayFor(model => model.Name)</h2>
             <p>@Html.DisplayFor(model => model.City)</p>
             <p>@Html.DisplayFor(model => model.Country)</p>
-            @if ((string)Session["UserID"] == Model.ID.ToString() || (string)Session["Role"] == "Admin")
+            @if ((string)Session["UserID"] == Model.ID.ToString() || Session["admin"] != null)
             {
                 <a class="btn btn-warning" href="/members/edit/@Model.ID">Edit</a>
             }

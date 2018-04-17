@@ -47,6 +47,11 @@ namespace Coursework.Controllers
                 {
                     Session["UserID"] = matchedUsers.ID.ToString();
                     Session["UserName"] = matchedUsers.Name.ToString();
+                    // don't worry, this isn't actually used for any authorisation logic, just whether to display the admin menu link - the actual route is secured
+                    if (matchedUsers.Role == Role.Admin)
+                    {
+                        Session["admin"] = true;
+                    }
                     Response.StatusCode = 200;
                     return Json(new { message = "Login complete, welcome back." }, JsonRequestBehavior.AllowGet);
                 }

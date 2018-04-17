@@ -20,7 +20,7 @@
                     <button class="btn btn-primary" id="signButton" href="/causes/sign/@Model.ID">Sign</button>
                 }
             }
-            @if ((string)Session["UserID"] == Model.Member.ID.ToString() || (string)Session["Role"] == "Admin")
+            @if ((string)Session["UserID"] == Model.Member.ID.ToString() || Session["admin"] != null)
             {
                 <a class="btn btn-warning" href="/causes/edit/@Model.ID">Edit</a>
             }
