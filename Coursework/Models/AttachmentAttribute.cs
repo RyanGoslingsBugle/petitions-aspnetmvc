@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Web;
@@ -35,6 +36,13 @@ namespace Coursework.Models
                 return new ValidationResult("Allowed file formats are jpg, jpeg and png.");
             }
 
+            // Check minimum dimensions
+            Image img = System.Drawing.Image.FromStream(file.InputStream);
+            if (img.Width < 480 || img.Height < 1024)
+            {
+                return new ValidationResult("Minimum file dimensions are 1024x480, please upload a larger image.");
+            }
+
             // Everything OK.
             return ValidationResult.Success;
         }
@@ -62,6 +70,13 @@ namespace Coursework.Models
                 if (String.IsNullOrEmpty(ext) || !allowedExtensions.Contains(ext.ToLower()))
                 {
                     return new ValidationResult("Allowed file formats are jpg, jpeg and png.");
+                }
+
+                // Check minimum dimensions
+                Image img = System.Drawing.Image.FromStream(file.InputStream);
+                if (img.Width < 480 || img.Height < 1024)
+                {
+                    return new ValidationResult("Minimum file dimensions are 1024x480, please upload a larger image.");
                 }
             }
 
