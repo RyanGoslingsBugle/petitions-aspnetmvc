@@ -47,7 +47,6 @@ namespace Coursework.Controllers
                 {
                     Session["UserID"] = matchedUsers.ID.ToString();
                     Session["UserName"] = matchedUsers.Name.ToString();
-                    Session["Role"] = matchedUsers.Role.ToString();
                     Response.StatusCode = 200;
                     return Json(new { message = "Login complete, welcome back." }, JsonRequestBehavior.AllowGet);
                 }
@@ -76,13 +75,17 @@ namespace Coursework.Controllers
 
         public ActionResult Admin(int page = 1, int pageSize = 25)
         {
-            if (Session["Role"] != null && Session["Role"].ToString() == "Admin")
+            if (Session["UserID"] != null)
             {
-                page = page > 0 ? page : 1;
-                pageSize = pageSize > 0 ? pageSize : 25;
+                Member requester = db.Members.Find(Convert.ToInt32(Session["UserID"].ToString()));
+                if (requester.Role == Coursework.Models.Role.Admin)
+                {
+                    page = page > 0 ? page : 1;
+                    pageSize = pageSize > 0 ? pageSize : 25;
 
-                var causes = db.Causes.OrderBy(a => a.ID);
-                return View(causes.ToPagedList(page, pageSize));
+                    var causes = db.Causes.OrderBy(a => a.ID);
+                    return View(causes.ToPagedList(page, pageSize));
+                }
             }
             return RedirectToAction("Index");
         }

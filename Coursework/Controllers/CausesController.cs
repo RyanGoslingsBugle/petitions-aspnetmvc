@@ -146,7 +146,8 @@ namespace Coursework.Controllers
             {
                 return HttpNotFound();
             }
-            if (Convert.ToInt32(Session["UserID"].ToString()) != cause.Member.ID && (string)Session["Role"] != "Admin")
+            Member requester = db.Members.Find(Convert.ToInt32(Session["UserID"].ToString()));
+            if (requester.ID != cause.Member.ID && requester.Role != Coursework.Models.Role.Admin)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.Forbidden);
             }
@@ -165,7 +166,8 @@ namespace Coursework.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.Forbidden);
             }
-            if (Convert.ToInt32(Session["UserID"].ToString()) != currentCause.Member.ID && (string)Session["Role"] != "Admin")
+            Member requester = db.Members.Find(Convert.ToInt32(Session["UserID"].ToString()));
+            if (requester.ID != currentCause.Member.ID && requester.Role != Coursework.Models.Role.Admin)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.Forbidden);
             }
@@ -212,7 +214,8 @@ namespace Coursework.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.Forbidden);
             }
-            if (Session["Role"].ToString() != "Admin")
+            Member requester = db.Members.Find(Convert.ToInt32(Session["UserID"].ToString()));
+            if (requester.Role != Coursework.Models.Role.Admin)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.Forbidden);
             }
