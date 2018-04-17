@@ -148,3 +148,11 @@
         font-size: 3rem;
     }
 }
+
+/* Card image fix */
+
+.card-img-top {
+    width: 100%;
+    object-fit: cover;
+    height: 15rem !important;
+}
